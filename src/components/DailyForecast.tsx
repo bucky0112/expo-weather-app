@@ -1,14 +1,7 @@
-import React, { FC, ComponentType } from 'react'
+import React, { FC } from 'react'
 import { View, Text } from 'react-native'
 import { AntDesign, Feather } from '@expo/vector-icons'
-
-type AntDesignNames = keyof typeof AntDesign.glyphMap
-type FeatherNames = keyof typeof Feather.glyphMap
-
-interface WeatherIconConfig {
-  component: ComponentType<any>
-  name: AntDesignNames | FeatherNames
-}
+import { weatherIcons } from '../config/weatherIconsConfig'
 
 interface DailyForecastProps {
   day: string
@@ -17,19 +10,13 @@ interface DailyForecastProps {
   tempLow: string
 }
 
-const weatherIcons: Record<string, WeatherIconConfig> = {
-  sunny: { component: Feather, name: 'sun' },
-  cloudy: { component: AntDesign, name: 'cloudo' },
-  rainy: { component: Feather, name: 'cloud-rain' }
-}
-
 const DailyForecast: FC<DailyForecastProps> = ({
   day,
   icon,
   tempHigh,
   tempLow
 }) => {
-  const IconComponent = weatherIcons[icon]?.component || AntDesign
+  const IconComponent = weatherIcons[icon]?.component || AntDesign || Feather
   const iconName = weatherIcons[icon]?.name || 'question'
 
   return (
