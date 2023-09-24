@@ -18,11 +18,12 @@ const DailyForecast: FC<DailyForecastProps> = ({
 }) => {
   const IconComponent = weatherIcons[icon]?.component || AntDesign || Feather
   const iconName = weatherIcons[icon]?.name || 'question'
+  const iconColor = weatherIcons[icon]?.color || '#ffffff'
 
   return (
     <View className='flex-row justify-around items-center mb-8 mr-4'>
       <Text className='text-lg font-medium text-white w-28'>{day}</Text>
-      <IconComponent name={iconName} size={30} color='#ded8d8' />
+      <IconComponent name={iconName} size={30} color={iconColor} />
       <Text className='text-lg font-semibold text-white w-24'>
         {tempHigh}° / {tempLow}°
       </Text>

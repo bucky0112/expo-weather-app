@@ -7,10 +7,11 @@ export type FeatherNames = keyof typeof Feather.glyphMap
 export interface WeatherIconConfig {
   component: ComponentType<any>
   name: AntDesignNames | FeatherNames
+  color: string
 }
 
 export const weatherIcons: Record<string, WeatherIconConfig> = {
-  sunny: { component: Feather, name: 'sun' },
-  cloudy: { component: AntDesign, name: 'cloudo' },
-  rainy: { component: Feather, name: 'cloud-rain' }
+  sunny: { component: Feather, name: 'sun', color: '#FFD700' },
+  cloudy: { component: AntDesign, name: 'cloudo', color: '#cfd8e2' },
+  rainy: { component: Feather, name: 'cloud-rain', color: '#a9b2bc' },
 }

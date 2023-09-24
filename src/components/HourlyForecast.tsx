@@ -12,12 +12,13 @@ interface HourlyForecastProps {
 const HourlyForecast: FC<HourlyForecastProps> = ({ time, icon, temp }) => {
   const IconComponent = weatherIcons[icon]?.component || AntDesign || Feather
   const iconName = weatherIcons[icon]?.name || 'question'
+  const iconColor = weatherIcons[icon]?.color || '#ffffff'
 
   return (
     <View className='items-center space-y-2'>
       <Text className='text-sm font-medium text-white'>{time}</Text>
-      <IconComponent name={iconName} size={30} color='#ded8d8' />
-      <Text className='text-lg font-semibold text-white'>{temp}</Text>
+      <IconComponent name={iconName} size={30} color={iconColor} />
+      <Text className='text-lg font-semibold text-white'>{temp}°</Text>
     </View>
   )
 }
