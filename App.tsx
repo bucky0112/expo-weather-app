@@ -1,6 +1,7 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { View, SafeAreaView, ScrollView } from 'react-native'
 import { StatusBar } from 'expo-status-bar'
+import * as Location from 'expo-location'
 import {
   CurrentWeather,
   DailyForecast,
@@ -9,8 +10,8 @@ import {
 } from './src/components'
 
 export default function App() {
-  const apiUrl = process.env.EXPO_PUBLIC_WEATHER_API_URL
-  const apiKey = process.env.EXPO_PUBLIC_WEATHER_API_KEY
+  // const apiUrl = process.env.EXPO_PUBLIC_WEATHER_API_URL
+  // const apiKey = process.env.EXPO_PUBLIC_WEATHER_API_KEY
 
   // const fetchData = async () => {
   //   try {
@@ -28,6 +29,23 @@ export default function App() {
   // useEffect(() => {
   //   fetchData()
   // }, [])
+  const [location, setLocation] = useState<object | null>({})
+  const [errorMsg, setErrorMsg] = useState<string | null>('')
+
+  console.log(location)
+
+  useEffect(() => {
+    ;(async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync()
+      if (status !== 'granted') {
+        setErrorMsg('Permission to access location was denied')
+        return
+      }
+
+      let location = await Location.getCurrentPositionAsync({})
+      setLocation(location)
+    })()
+  }, [])
 
   return (
     <SafeAreaView className='flex-1 bg-blue-500'>
