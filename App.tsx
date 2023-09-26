@@ -9,30 +9,43 @@ import {
   HeaderInfo
 } from './src/components'
 
+interface WeatherDetail {
+  description: string;
+  icon: string;
+  id: number;
+  main: string;
+}
+
+interface CurrentWeatherInfo {
+  feels_like: number
+  temp: number
+  weather: WeatherDetail[];
+}
+
 export default function App() {
-  // const apiUrl = process.env.EXPO_PUBLIC_WEATHER_API_URL
-  // const apiKey = process.env.EXPO_PUBLIC_WEATHER_API_KEY
-
-  // const fetchData = async () => {
-  //   try {
-  //     const response = await fetch(
-  //       `${apiUrl}lat=33.44&lon=-94.04&exclude=hourly,daily&appid=${apiKey}`
-  //     )
-  //     const json = await response.json()
-  //     // return json
-  //     console.log(json)
-  //   } catch (err) {
-  //     console.log(err)
-  //   }
-  // }
-
-  // useEffect(() => {
-  //   fetchData()
-  // }, [])
-  const [location, setLocation] = useState<object | null>({})
+  const apiUrl = process.env.EXPO_PUBLIC_WEATHER_API_URL
+  const apiKey = process.env.EXPO_PUBLIC_WEATHER_API_KEY
+  const [location, setLocation] = useState<Location.LocationObject | null>(null)
   const [errorMsg, setErrorMsg] = useState<string | null>('')
+  const [currentWeather, setCurrentWeather] =
+    useState<CurrentWeatherInfo | null>(null)
 
-  console.log(location)
+  console.log(currentWeather)
+
+  const fetchWeatherData = async () => {
+    if (location && location.coords) {
+      const { latitude, longitude } = location.coords
+      try {
+        const response = await fetch(
+          `${apiUrl}lat=${latitude}&lon=${longitude}&exclude=hourly,daily&units=metric&appid=${apiKey}`
+        )
+        const json = await response.json()
+        setCurrentWeather(json.current)
+      } catch (err) {
+        console.log(err)
+      }
+    }
+  }
 
   useEffect(() => {
     ;(async () => {
@@ -46,6 +59,12 @@ export default function App() {
       setLocation(location)
     })()
   }, [])
+
+  useEffect(() => {
+    if (location) {
+      fetchWeatherData()
+    }
+  }, [location])
 
   return (
     <SafeAreaView className='flex-1 bg-blue-500'>
