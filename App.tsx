@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { View, SafeAreaView, ScrollView } from 'react-native'
 import { StatusBar } from 'expo-status-bar'
 import * as Location from 'expo-location'
+import useStore from './src/store'
 import {
   CurrentWeather,
   DailyForecast,
@@ -9,43 +10,8 @@ import {
   HeaderInfo
 } from './src/components'
 
-interface WeatherDetail {
-  description: string;
-  icon: string;
-  id: number;
-  main: string;
-}
-
-interface CurrentWeatherInfo {
-  feels_like: number
-  temp: number
-  weather: WeatherDetail[];
-}
-
 export default function App() {
-  const apiUrl = process.env.EXPO_PUBLIC_WEATHER_API_URL
-  const apiKey = process.env.EXPO_PUBLIC_WEATHER_API_KEY
-  const [location, setLocation] = useState<Location.LocationObject | null>(null)
-  const [errorMsg, setErrorMsg] = useState<string | null>('')
-  const [currentWeather, setCurrentWeather] =
-    useState<CurrentWeatherInfo | null>(null)
-
-  console.log(currentWeather)
-
-  const fetchWeatherData = async () => {
-    if (location && location.coords) {
-      const { latitude, longitude } = location.coords
-      try {
-        const response = await fetch(
-          `${apiUrl}lat=${latitude}&lon=${longitude}&exclude=hourly,daily&units=metric&appid=${apiKey}`
-        )
-        const json = await response.json()
-        setCurrentWeather(json.current)
-      } catch (err) {
-        console.log(err)
-      }
-    }
-  }
+  const { location, errorMsg, setLocation, setErrorMsg, fetchWeatherData } = useStore()
 
   useEffect(() => {
     ;(async () => {
