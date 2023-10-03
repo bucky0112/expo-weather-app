@@ -11,7 +11,7 @@ import {
 } from './src/components'
 
 export default function App() {
-  const { location, errorMsg, setLocation, setErrorMsg, fetchWeatherData } = useStore()
+  const { location, errorMsg, setLocation, setErrorMsg, fetchWeatherData, fetchLocation, city } = useStore()
 
   useEffect(() => {
     ;(async () => {
@@ -29,6 +29,7 @@ export default function App() {
   useEffect(() => {
     if (location) {
       fetchWeatherData()
+      fetchLocation()
     }
   }, [location])
 
