@@ -29,6 +29,8 @@ interface Store {
   errorMsg: string | null
   currentWeather: CurrentWeatherInfo | null
   city: string | null
+  currentDate: string | null
+  setCurrentDate: (date: string | null) => void
   setCity: (city: string | null) => void
   setLocation: (location: Location.LocationObject | null) => void
   setErrorMsg: (msg: string | null) => void
@@ -42,6 +44,8 @@ const useStore = create<Store>((set) => ({
   errorMsg: null,
   currentWeather: null,
   city: null,
+  currentDate: null,
+  setCurrentDate: (date) => set({ currentDate: date }),
   setCity: (city) => set({ city }),
   setLocation: (location) => set({ location }),
   setErrorMsg: (msg) => set({ errorMsg: msg }),
