@@ -4,7 +4,7 @@ import dayjs from 'dayjs'
 
 const convertHourlyToReadableTime = (
   hourlyData: HourlyWeatherInfo[],
-  sliceCount: number = 5
+  sliceCount: number = 25
 ) => {
   return hourlyData.slice(1, sliceCount).map((hour: HourlyWeatherInfo) => {
     const readableTime = dayjs.unix(hour.dt).format('HH:mm')

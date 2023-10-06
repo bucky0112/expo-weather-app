@@ -1,5 +1,11 @@
-import { useEffect } from 'react'
-import { View, SafeAreaView, ScrollView } from 'react-native'
+import { useEffect, memo } from 'react'
+import {
+  View,
+  SafeAreaView,
+  ScrollView,
+  FlatList,
+  useWindowDimensions
+} from 'react-native'
 import { StatusBar } from 'expo-status-bar'
 import * as Location from 'expo-location'
 import useStore from './src/store'
@@ -41,16 +47,34 @@ export default function App() {
     }
   }, [location])
 
+  const windowWidth = useWindowDimensions().width
+  const itemWidth = windowWidth / 4
+
+  const MemoizedHourlyForecast = memo(HourlyForecast)
+
   return (
     <SafeAreaView className='flex-1 bg-blue-500'>
       <StatusBar style='auto' />
       <HeaderInfo />
       <CurrentWeather />
-      <View className='flex-row justify-around p-6'>
-        {hourlyWeather?.map((hourly) => {
-          const { temp, readableTime, dt } = hourly
-          return <HourlyForecast time={readableTime} icon="cloudy" temp={temp} key={dt} />
-        })}
+      <View className='flex-row py-6'>
+        <FlatList
+          data={hourlyWeather}
+          keyExtractor={({ dt }) => dt.toString()}
+          renderItem={({ item }) => {
+            const { temp, readableTime } = item
+            return (
+              <View style={{ width: itemWidth }}>
+                <MemoizedHourlyForecast
+                  time={readableTime}
+                  icon='cloudy'
+                  temp={temp}
+                />
+              </View>
+            )
+          }}
+          horizontal
+        />
       </View>
       <ScrollView>
         <View className='p-6'>
