@@ -1,5 +1,16 @@
 import { create } from 'zustand'
 import * as Location from 'expo-location'
+import dayjs from 'dayjs'
+
+const convertHourlyToReadableTime = (
+  hourlyData: HourlyWeatherInfo[],
+  sliceCount: number = 5
+) => {
+  return hourlyData.slice(1, sliceCount).map((hour: HourlyWeatherInfo) => {
+    const readableTime = dayjs.unix(hour.dt).format('HH:mm')
+    return { ...hour, readableTime }
+  })
+}
 
 interface WeatherDetail {
   description: string
@@ -14,14 +25,21 @@ interface CurrentWeatherInfo {
   weather: WeatherDetail[]
 }
 
+interface HourlyWeatherInfo {
+  dt: number
+  temp: number
+  weather: WeatherDetail[]
+  readableTime: string
+}
+
 interface AddressComponent {
-  long_name: string;
-  short_name: string;
-  types: string[];
+  long_name: string
+  short_name: string
+  types: string[]
 }
 
 interface LocationResult {
-  address_components: AddressComponent[];
+  address_components: AddressComponent[]
 }
 
 interface Store {
@@ -30,6 +48,7 @@ interface Store {
   currentWeather: CurrentWeatherInfo | null
   city: string | null
   currentDate: string | null
+  hourlyWeather: HourlyWeatherInfo[] | null
   setCurrentDate: (date: string | null) => void
   setCity: (city: string | null) => void
   setLocation: (location: Location.LocationObject | null) => void
@@ -45,6 +64,7 @@ const useStore = create<Store>((set) => ({
   currentWeather: null,
   city: null,
   currentDate: null,
+  hourlyWeather: null,
   setCurrentDate: (date) => set({ currentDate: date }),
   setCity: (city) => set({ city }),
   setLocation: (location) => set({ location }),
@@ -58,10 +78,13 @@ const useStore = create<Store>((set) => ({
       const apiKey = process.env.EXPO_PUBLIC_WEATHER_API_KEY
       try {
         const response = await fetch(
-          `${apiUrl}lat=${latitude}&lon=${longitude}&exclude=hourly,daily&units=metric&appid=${apiKey}`
+          `${apiUrl}lat=${latitude}&lon=${longitude}&exclude=minutely,daily&units=metric&appid=${apiKey}`
         )
         const json = await response.json()
-        set({ currentWeather: json.current })
+        set({
+          currentWeather: json.current,
+          hourlyWeather: convertHourlyToReadableTime(json.hourly)
+        })
       } catch (err) {
         console.log(err)
       }
@@ -82,7 +105,9 @@ const useStore = create<Store>((set) => ({
         const json = await res.json()
         const cityComponent = json.results
           .flatMap((result: LocationResult) => result.address_components)
-          .find((component: AddressComponent) => component.types.includes('locality'))
+          .find((component: AddressComponent) =>
+            component.types.includes('locality')
+          )
 
         if (cityComponent) {
           useStore.getState().setCity(cityComponent.long_name)

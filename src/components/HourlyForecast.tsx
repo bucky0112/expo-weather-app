@@ -1,4 +1,4 @@
-import React, { FC } from 'react'
+import { FC } from 'react'
 import { View, Text } from 'react-native'
 import { AntDesign, Feather } from '@expo/vector-icons'
 import { weatherIcons } from '../config/weatherIconsConfig'
@@ -6,7 +6,7 @@ import { weatherIcons } from '../config/weatherIconsConfig'
 interface HourlyForecastProps {
   time: string
   icon: keyof typeof weatherIcons
-  temp: string
+  temp: number
 }
 
 const HourlyForecast: FC<HourlyForecastProps> = ({ time, icon, temp }) => {

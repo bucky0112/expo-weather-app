@@ -11,7 +11,15 @@ import {
 } from './src/components'
 
 export default function App() {
-  const { location, errorMsg, setLocation, setErrorMsg, fetchWeatherData, fetchLocation, city } = useStore()
+  const {
+    location,
+    errorMsg,
+    setLocation,
+    setErrorMsg,
+    fetchWeatherData,
+    fetchLocation,
+    hourlyWeather
+  } = useStore()
 
   useEffect(() => {
     ;(async () => {
@@ -39,10 +47,10 @@ export default function App() {
       <HeaderInfo />
       <CurrentWeather />
       <View className='flex-row justify-around p-6'>
-        <HourlyForecast time='4 PM' icon='sunny' temp='28' />
-        <HourlyForecast time='5 PM' icon='cloudy' temp='26' />
-        <HourlyForecast time='6 PM' icon='rainy' temp='26' />
-        <HourlyForecast time='7 PM' icon='rainy' temp='25' />
+        {hourlyWeather?.map((hourly) => {
+          const { temp, readableTime, dt } = hourly
+          return <HourlyForecast time={readableTime} icon="cloudy" temp={temp} key={dt} />
+        })}
       </View>
       <ScrollView>
         <View className='p-6'>
