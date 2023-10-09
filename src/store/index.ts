@@ -12,6 +12,16 @@ const convertHourlyToReadableTime = (
   })
 }
 
+const convertDailyToReadableDay = (
+  dailyData: DailyWeatherInfo[],
+  sliceCount: number = 7
+) => {
+  return dailyData.slice(1, sliceCount).map((day: DailyWeatherInfo) => {
+    const readableDay = dayjs.unix(day.dt).format('dddd')
+    return { ...day, readableDay }
+  })
+}
+
 interface WeatherDetail {
   description: string
   icon: string
@@ -32,6 +42,16 @@ interface HourlyWeatherInfo {
   readableTime: string
 }
 
+export interface DailyWeatherInfo {
+  dt: number
+  temp: {
+    max: number
+    min: number
+  }
+  weather: WeatherDetail[],
+  readableDay: string
+}
+
 interface AddressComponent {
   long_name: string
   short_name: string
@@ -49,6 +69,7 @@ interface Store {
   city: string | null
   currentDate: string | null
   hourlyWeather: HourlyWeatherInfo[] | null
+  dailyWeather: DailyWeatherInfo[] | null
   setCurrentDate: (date: string | null) => void
   setCity: (city: string | null) => void
   setLocation: (location: Location.LocationObject | null) => void
@@ -65,6 +86,7 @@ const useStore = create<Store>((set) => ({
   city: null,
   currentDate: null,
   hourlyWeather: null,
+  dailyWeather: null,
   setCurrentDate: (date) => set({ currentDate: date }),
   setCity: (city) => set({ city }),
   setLocation: (location) => set({ location }),
@@ -78,12 +100,22 @@ const useStore = create<Store>((set) => ({
       const apiKey = process.env.EXPO_PUBLIC_WEATHER_API_KEY
       try {
         const response = await fetch(
-          `${apiUrl}lat=${latitude}&lon=${longitude}&exclude=minutely,daily&units=metric&appid=${apiKey}`
+          `${apiUrl}lat=${latitude}&lon=${longitude}&exclude=minutely,alert&units=metric&appid=${apiKey}`
         )
         const json = await response.json()
         set({
           currentWeather: json.current,
-          hourlyWeather: convertHourlyToReadableTime(json.hourly)
+          hourlyWeather: convertHourlyToReadableTime(json.hourly),
+          dailyWeather: convertDailyToReadableDay(
+            json.daily.map((day: DailyWeatherInfo) => ({
+              dt: day.dt,
+              temp: {
+                max: day.temp.max,
+                min: day.temp.min
+              },
+              weather: day.weather
+            }))
+          )
         })
       } catch (err) {
         console.log(err)
