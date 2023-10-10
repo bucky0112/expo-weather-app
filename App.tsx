@@ -61,7 +61,7 @@ export default function App() {
     return (
       <DailyForecast
         day={readableDay}
-        icon='sunny'
+        icon={item.weather[0].icon}
         tempHigh={tempHigh}
         tempLow={tempLow}
       />
@@ -73,17 +73,17 @@ export default function App() {
       <StatusBar style='auto' />
       <HeaderInfo />
       <CurrentWeather />
-      <View className='flex-row py-6'>
+      <View className='flex-row py-6 mb-6'>
         <FlatList
           data={hourlyWeather}
           keyExtractor={({ dt }) => dt.toString()}
           renderItem={({ item }) => {
-            const { temp, readableTime } = item
+            const { temp, readableTime, weather } = item
             return (
               <View style={{ width: itemWidth }}>
                 <MemoizedHourlyForecast
                   time={readableTime}
-                  icon='cloudy'
+                  icon={weather[0].icon}
                   temp={temp}
                 />
               </View>
@@ -92,13 +92,11 @@ export default function App() {
           horizontal
         />
       </View>
-      <View className='p-6'>
         <FlatList
           data={dailyWeather}
           keyExtractor={({ dt }) => dt.toString()}
           renderItem={renderDailyItem}
         />
-      </View>
     </SafeAreaView>
   )
 }

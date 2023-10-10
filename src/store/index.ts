@@ -48,7 +48,7 @@ export interface DailyWeatherInfo {
     max: number
     min: number
   }
-  weather: WeatherDetail[],
+  weather: WeatherDetail[]
   readableDay: string
 }
 

@@ -1,5 +1,6 @@
 import { View, Text } from 'react-native'
-import { AntDesign } from '@expo/vector-icons'
+import { Feather, Ionicons } from '@expo/vector-icons'
+import { weatherIcons } from '../config/weatherIconsConfig'
 import useStore from '../store'
 
 const CurrentWeather = () => {
@@ -14,11 +15,15 @@ const CurrentWeather = () => {
   }
 
   const { temp } = currentWeather
-  const { description } = currentWeather?.weather[0]
+  const { description, icon } = currentWeather?.weather[0]
+
+  const IconComponent = weatherIcons[icon]?.component || Feather || Ionicons
+  const iconName = weatherIcons[icon]?.name || 'question'
+  const iconColor = weatherIcons[icon]?.color || '#ffffff'
 
   return (
     <View className='items-center space-y-2'>
-      <AntDesign name='cloudo' size={60} color='#ded8d8' />
+      <IconComponent name={iconName} size={60} color={iconColor} />
       <Text className='text-6xl font-bold text-white'>{temp}</Text>
       <Text className='text-xl text-gray-300'>{description}</Text>
     </View>

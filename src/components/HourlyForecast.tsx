@@ -1,6 +1,6 @@
 import { FC } from 'react'
 import { View, Text } from 'react-native'
-import { AntDesign, Feather } from '@expo/vector-icons'
+import { Feather, Ionicons } from '@expo/vector-icons'
 import { weatherIcons } from '../config/weatherIconsConfig'
 
 interface HourlyForecastProps {
@@ -10,7 +10,7 @@ interface HourlyForecastProps {
 }
 
 const HourlyForecast: FC<HourlyForecastProps> = ({ time, icon, temp }) => {
-  const IconComponent = weatherIcons[icon]?.component || AntDesign || Feather
+  const IconComponent = weatherIcons[icon]?.component || Feather || Ionicons
   const iconName = weatherIcons[icon]?.name || 'question'
   const iconColor = weatherIcons[icon]?.color || '#ffffff'
 
