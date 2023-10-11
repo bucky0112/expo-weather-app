@@ -70,6 +70,8 @@ interface Store {
   currentDate: string | null
   hourlyWeather: HourlyWeatherInfo[] | null
   dailyWeather: DailyWeatherInfo[] | null
+  searchCity: string
+  setSearchCity: (city: string) => void
   setCurrentDate: (date: string | null) => void
   setCity: (city: string | null) => void
   setLocation: (location: Location.LocationObject | null) => void
@@ -77,6 +79,7 @@ interface Store {
   setCurrentWeather: (weather: CurrentWeatherInfo | null) => void
   fetchWeatherData: () => Promise<void>
   fetchLocation: () => Promise<void>
+  fetchLatLngByCity: () => Promise<void>
 }
 
 const useStore = create<Store>((set) => ({
@@ -87,6 +90,8 @@ const useStore = create<Store>((set) => ({
   currentDate: null,
   hourlyWeather: null,
   dailyWeather: null,
+  searchCity: '',
+  setSearchCity: (city) => set({ searchCity: city }),
   setCurrentDate: (date) => set({ currentDate: date }),
   setCity: (city) => set({ city }),
   setLocation: (location) => set({ location }),
@@ -149,6 +154,47 @@ const useStore = create<Store>((set) => ({
       } catch (err) {
         console.log(err)
       }
+    }
+  },
+  fetchLatLngByCity: async () => {
+    const { searchCity } = useStore.getState()
+
+    if (searchCity) {
+      const apiUrl = process.env.EXPO_PUBLIC_GEOCODING_API_URL
+      const apiKey = process.env.EXPO_PUBLIC_GEOCODING_API_KEY
+
+      try {
+        const response = await fetch(
+          `${apiUrl}address=${encodeURIComponent(
+            searchCity
+          )}&key=${apiKey}&language=en`
+        )
+        const json = await response.json()
+
+        if (json?.results?.length > 0) {
+          const location = json.results[0]?.geometry?.location
+          useStore.getState().setLocation({
+            coords: {
+              latitude: location?.lat,
+              longitude: location?.lng,
+              altitude: null,
+              accuracy: null,
+              altitudeAccuracy: null,
+              heading: null,
+              speed: null
+            },
+            timestamp: Date.now()
+          })
+        } else {
+          console.error('Unable to fetch coordinates for the given city')
+        }
+      } catch (err) {
+        useStore
+          .getState()
+          .setErrorMsg('Failed to fetch coordinates for the given city')
+      }
+    } else {
+      console.warn('No search city provided')
     }
   }
 }))
