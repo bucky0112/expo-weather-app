@@ -4,9 +4,11 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View
+  View,
+  useWindowDimensions
 } from 'react-native'
 import { StackNavigationProp } from '@react-navigation/stack'
+import LottieView from 'lottie-react-native'
 import useStore from '../store'
 
 type TabNavigatorParams = {
@@ -15,8 +17,8 @@ type TabNavigatorParams = {
 }
 
 type SearchProps = {
-  navigation: StackNavigationProp<TabNavigatorParams, 'Search'>;
-};
+  navigation: StackNavigationProp<TabNavigatorParams, 'Search'>
+}
 
 const Search: FC<SearchProps> = ({ navigation }) => {
   const { searchCity, setSearchCity, fetchLatLngByCity } = useStore()
@@ -31,6 +33,8 @@ const Search: FC<SearchProps> = ({ navigation }) => {
   }
 
   const buttonText = searchCity ? 'Search' : 'Current Location'
+  const windowWidth = useWindowDimensions().width
+  const itemWidth = windowWidth / 2
 
   return (
     <SafeAreaView className='flex-1 bg-blue-500'>
@@ -45,8 +49,19 @@ const Search: FC<SearchProps> = ({ navigation }) => {
           className='w-2/3 bg-lime-500 rounded-full p-4'
           onPress={handleCityPress}
         >
-          <Text className='text-center'>{buttonText}</Text>
+          <Text className='text-center font-semibold'>{buttonText}</Text>
         </TouchableOpacity>
+      </View>
+      <View className='items-center mt-16'>
+        <LottieView
+          loop
+          autoPlay
+          source={require('../assets/location.json')}
+          style={{
+            width: itemWidth,
+            height: itemWidth
+          }}
+        />
       </View>
     </SafeAreaView>
   )
